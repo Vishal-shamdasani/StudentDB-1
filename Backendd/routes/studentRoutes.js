@@ -1,52 +1,47 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Student = require('../models/studentModel');
-const auth = require('../middleware/auth');
+const Student = require("../models/studentModel");
 
 // POST a new student
-router.post('/students', auth, async (req, res) => {
-  try {
-    const student = new Student(req.body);
-    await student.save();
-    res.status(201).json(student);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
+router.post("/students", async (req, res) => {
+    const student = await Student.create(req.body);
+
+    res.status(201).json({
+        status: "success",
+        student,
+    });
+});
+
+//
+router.get("/students", async (req, res) => {
+    const students = await Student.find();
+    res.status(200).json({
+        students: students.length,
+        students,
+    });
 });
 
 // GET a single student by ID
-router.get('/students/:id', auth, async (req, res) => {
-  try {
+router.get("/students/:id", async (req, res) => {
     const student = await Student.findById(req.params.id);
-    if (!student) return res.status(404).json({ message: 'Student not found' });
+    if (!student) return res.status(404).json({ message: "Student not found" });
     res.status(200).json(student);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
 });
 
 // PUT to update a student by ID
-router.put('/students/:id', auth, async (req, res) => {
-  try {
-    const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!student) return res.status(404).json({ message: 'Student not found' });
+router.put("/students/:id", async (req, res) => {
+    const student = await Student.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+    });
+    if (!student) return res.status(404).json({ message: "Student not found" });
     res.status(200).json(student);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
 });
 
 // DELETE a student by ID
-router.delete('/students/:id', auth, async (req, res) => {
-  try {
+router.delete("/students/:id", async (req, res) => {
     const student = await Student.findByIdAndDelete(req.params.id);
-    if (!student) return res.status(404).json({ message: 'Student not found' });
-    res.status(200).json({ message: 'Student deleted' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    res.status(200).json({ message: "Student deleted" });
 });
 
-// Export the router
 module.exports = router;
-

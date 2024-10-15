@@ -1,26 +1,30 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 3,
-  },
-  age: {
-    type: Number,
-    required: true,
-    min: 1,
-  },
-  class: {
-    type: String,
-    required: true,
-    minlength: 2,
-  },
-  grade: {
-    type: String,
-    required: true,
-    enum: ['A', 'B', 'C', 'D', 'F'],  // Grade validation
-  },
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    age: {
+        type: String,
+        required: true,
+        min: 1,
+    },
+    class: {
+        type: String,
+        required: true,
+    },
+    grade: {
+        type: String,
+        required: true,
+        enum: ["A", "B", "C", "D", "F"],
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
+    },
 });
 
-module.exports = mongoose.model('Student', studentSchema);
+const Student = new mongoose.model("Student", studentSchema);
+module.exports = Student;

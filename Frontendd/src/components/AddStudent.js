@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './AddStudent.css'; // Make sure this CSS file exists
+import React, { useState } from "react";
+import axios from "axios";
+import "./AddStudent.css"; // Make sure this CSS file exists
 
 const AddStudent = () => {
     const [student, setStudent] = useState({
-        name: '',
-        age: '',
-        class: '',
-        grade: '',
+        name: "",
+        age: "",
+        class: "",
+        grade: "",
     });
 
     const handleChange = (e) => {
@@ -20,15 +20,18 @@ const AddStudent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent the default form submission
-        console.log('Form submitted:', student); // Debugging statement
+        console.log("Form submitted:", student); // Debugging statement
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/students`, student);
-            console.log('Student added:', response.data);
+            const response = await axios.post(
+                `http://localhost:5001/api/students`,
+                student
+            );
+            console.log("Student added:", response.data);
             // Optionally, reset the form or redirect
-            setStudent({ name: '', age: '', class: '', grade: '' }); // Resetting the form
+            setStudent({ name: "", age: "", class: "", grade: "" }); // Resetting the form
         } catch (error) {
-            console.error('Error adding student:', error);
+            console.error("Error adding student:", error);
         }
     };
 
