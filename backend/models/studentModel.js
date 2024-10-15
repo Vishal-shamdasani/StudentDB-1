@@ -4,10 +4,9 @@ const studentSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
     },
     age: {
-        type: String,
+        type: Number,  // Changed from String to Number
         required: true,
         min: 1,
     },
@@ -18,7 +17,7 @@ const studentSchema = new mongoose.Schema({
     grade: {
         type: String,
         required: true,
-        enum: ["A", "B", "C", "D", "F"],
+        enum: ["A", "B", "C", "D", "E", "F"],
     },
     createdAt: {
         type: Date,
@@ -26,5 +25,5 @@ const studentSchema = new mongoose.Schema({
     },
 });
 
-const Student = new mongoose.model("Student", studentSchema);
+const Student = mongoose.model("Student", studentSchema);
 module.exports = Student;

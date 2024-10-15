@@ -25,7 +25,7 @@ app.use(cors());
 
 dotenv.config({ path: "./config.env" });
 
-const DB = process.env.DB;
+const DB = process.env.DB || 'mongodb://localhost:27017/mern-student-db';
 
 // MongoDB connection
 mongoose.connect(DB).then(() => console.log("MongoDB connected..."));

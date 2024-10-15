@@ -1,0 +1,48 @@
+version: '3'
+networks:
+  mern-network:
+    driver: bridge
+services:
+  backend:
+    build:
+      context: ./backend   # Path to the backend's Dockerfile
+    container_name: mern-backend
+    ports:
+      - "5001:5001"   # Exposing backend API on port 5000
+    environment:
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://mongo:27017/mern-student-db  # MongoDB connection string
+    volumes:
+      - ./backend:/app  # Mount backend code for live development
+      - /app/node_modules  # Prevent node_modules from being overwritten
+    networks:
+      - mern-network
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend  # Path to the frontend's Dockerfile
+    container_name: mern-frontend
+    ports:
+      - "3009:80"    # Exposing frontend on port 3000 (React)
+    depends_on:
+      - backend
+    networks:
+      - mern-network
+    volumes:
+      - ./frontend:/app  # Mount frontend code for live development
+      - /app/node_modules  # Prevent node_modules from being overwritten
+
+  mongo:
+    image: mongo:latest
+    container_name: mern-mongo
+    ports:
+      - "27017:27017"  # Expose MongoDB on default port
+    volumes:
+      - mongo-data:/data/db  # Persist MongoDB data
+    networks:
+      - mern-network
+
+volumes:
+  mongo-data:
