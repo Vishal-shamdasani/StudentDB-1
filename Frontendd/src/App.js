@@ -19,17 +19,21 @@ const App = () => {
           <Button color="inherit" href="/add-student">
             Add Student
           </Button>
+          {/* Remove the static Edit Student button */}
+          <Button color="inherit" href="/delete-student">
+            Delete Student
+          </Button>
         </Toolbar>
       </AppBar>
       <Container style={{ marginTop: '40px' }}>
         <Routes>
           <Route path="/" element={<StudentList />} />
           <Route path="/add-student" element={<AddStudent />} />
-          <Route path="/edit-student/:id" element={<EditStudent />} />
+          <Route path="/edit-student/:id" element={<EditStudent />} />  {/* Keep the dynamic route for editing */}
         </Routes>
       </Container>
     </Router>
   );
 };
 
-export default App
+export default App;

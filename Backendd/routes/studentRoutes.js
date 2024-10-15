@@ -31,11 +31,11 @@ router.get("/students/:id", async (req, res) => {
 // PUT to update a student by ID
 router.put("/students/:id", async (req, res) => {
     const student = await Student.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
+      new: true,
     });
     if (!student) return res.status(404).json({ message: "Student not found" });
     res.status(200).json(student);
-});
+  });
 
 // DELETE a student by ID
 router.delete("/students/:id", async (req, res) => {
