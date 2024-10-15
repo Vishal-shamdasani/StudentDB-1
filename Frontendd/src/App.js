@@ -20,9 +20,6 @@ const App = () => {
             Add Student
           </Button>
           {/* Remove the static Edit Student button */}
-          <Button color="inherit" href="/delete-student">
-            Delete Student
-          </Button>
         </Toolbar>
       </AppBar>
       <Container style={{ marginTop: '40px' }}>
