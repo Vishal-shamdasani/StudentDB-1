@@ -2,19 +2,22 @@ version: '3'
 networks:
   mern-network:
     driver: bridge
+  monitoring:
+    driver: bridge
+
 services:
   backend:
     build:
       context: ./backend   # Path to the backend's Dockerfile
     container_name: mern-backend
     ports:
-      - "5001:5001"   # Exposing backend API on port 5000
+      - "5001:5001"   # Exposing backend API on port 5001
     environment:
       - NODE_ENV=production
       - MONGO_URL=mongodb://mongo:27017/mern-student-db  # MongoDB connection string
     volumes:
       - ./backend:/app  # Mount backend code for live development
-
+      - /app/node_modules  # Prevent node_modules from being overwritten
     networks:
       - mern-network
     depends_on:
@@ -25,7 +28,7 @@ services:
       context: ./frontend  # Path to the frontend's Dockerfile
     container_name: mern-frontend
     ports:
-      - "3009:80"    # Exposing frontend on port 3000 (React)
+      - "3009:80"    # Exposing frontend on port 3009
     depends_on:
       - backend
     networks:
@@ -44,5 +47,91 @@ services:
     networks:
       - mern-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Mount Prometheus configuration
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"  # Prometheus default port
+    networks:
+      - monitoring
+      - mern-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"  # Grafana default port
+    networks:
+      - monitoring
+      - mern-network
+    depends_on:
+      - prometheus
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+
+  mongo-exporter:
+    image: bitnami/mongodb-exporter:latest
+    container_name: mongodb-exporter
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/mern-student-db
+    ports:
+      - "9216:9216"
+    networks:
+      - monitoring
+      - mern-network
+
+  cadvisor:
+    image: google/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - monitoring
+
+  loki:
+    image: grafana/loki:2.8.1
+    container_name: loki
+    ports:
+      - "3100:3100"  # Loki default port
+    networks:
+      - monitoring
+    volumes:
+      - ./loki-data:/loki  # Mount the data directory for persistent storage
+      - ./loki-config.yml:/etc/loki/local-config.yaml  # Mount Loki configuration
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.8.1
+    container_name: promtail
+    networks:
+      - monitoring
+    volumes:
+      - /var/log:/var/log  # Mount the log directory
+      - /var/lib/docker/containers:/var/lib/docker/containers  # Mount container logs
+      - ./promtail-config.yml:/etc/promtail/config.yml  # Mount Promtail configuration
+    command: -config.file=/etc/promtail/config.yml
+
 volumes:
   mongo-data:
+  prometheus_data:
+  grafana_data:
+  loki-data:  # Add Loki data volume

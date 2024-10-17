@@ -1,9 +1,12 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, NavLink } from 'react-router-dom';  // Use NavLink instead of href
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, NavLink } from 'react-router-dom'; 
 import { Container, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import StudentList from './components/StudentList';
 import AddStudent from './components/AddStudent';
 import EditStudent from './components/EditStudent';
+
+// Backend URL is still here in case it's needed for other purposes
+const backendUrl = 'http://localhost:5001/api'; 
 
 const App = () => {
   return (
@@ -13,19 +16,19 @@ const App = () => {
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Student Management System
           </Typography>
-          <Button 
+          <Button
             color="inherit"
-            component={NavLink} 
-            to="/" 
-            style={({ isActive }) => ({ color: isActive ? 'yellow' : 'white' })}  // Highlight active route
+            component={NavLink}
+            to="/"
+            style={({ isActive }) => ({ color: isActive ? 'yellow' : 'white' })}
           >
             Home
           </Button>
-          <Button 
+          <Button
             color="inherit"
-            component={NavLink} 
-            to="/add-student" 
-            style={({ isActive }) => ({ color: isActive ? 'yellow' : 'white' })}  // Highlight active route
+            component={NavLink}
+            to="/add-student"
+            style={({ isActive }) => ({ color: isActive ? 'yellow' : 'white' })}
           >
             Add Student
           </Button>
