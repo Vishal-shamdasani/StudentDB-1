@@ -14,7 +14,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/mern-student-db  # MongoDB connection string
     volumes:
       - ./backend:/app  # Mount backend code for live development
-      - /app/node_modules  # Prevent node_modules from being overwritten
+
     networks:
       - mern-network
     depends_on:
