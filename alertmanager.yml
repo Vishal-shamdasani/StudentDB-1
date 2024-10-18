@@ -1,14 +1,21 @@
 global:
   smtp_smarthost: 'smtp.gmail.com:587'
-  smtp_from: 'your email@gmail.com'
-  smtp_auth_username: 'your email@gmail.com'
-  smtp_auth_password: '{{ env "SMTP_AUTH_PASSWORD" }}'  # Use environment variable for password
+  smtp_from: 'your-real-email@gmail.com'  # Replace with your real email
+  smtp_auth_username: 'your-real-email@gmail.com'  # Replace with your real email
+  smtp_auth_password: '{{ env "SMTP_AUTH_PASSWORD" }}'  # Ensure the environment variable is set
 
 route:
-  group_by: ['alertname']
-  receiver: 'email-alerts'
+  receiver: 'default'
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
 
 receivers:
-  - name: 'email-alerts'
+  - name: 'default'
     email_configs:
-      - to: 'recipient-email@example.com'
+      - to: 'recipient-email@example.com'  # Replace with your recipient email
+        send_resolved: true
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/T00000000/B00000000/actual-webhook-url'  # Replace with your webhook URL
+        channel: '#your-channel-name'  # Replace with the actual Slack channel name
+        send_resolved: true

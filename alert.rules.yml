@@ -1,11 +1,97 @@
 groups:
-  - name: alert.rules
-    rules:
-      - alert: InstanceDown
-        expr: up == 0  # Trigger an alert when any target is down (i.e., not "up")
-        for: 5m        # Wait for 5 minutes before firing the alert
-        labels:
-          severity: critical
-        annotations:
-          summary: "Instance {{ $labels.instance }} is down"
-          description: "Instance {{ $labels.instance }} has been down for more than 5 minutes."
+- name: custom-alerts
+  rules:
+  # Alert for Disk and CPU Utilization
+  - alert: HighCPUUsage
+    expr: sum(rate(node_cpu_seconds_total{mode!="idle"}[1m])) by (instance) / sum(machine_cpu_cores) by (instance) > 0.8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Instance {{ $labels.instance }} high CPU usage"
+      description: "CPU usage is above 80% for the last 5 minutes."
+
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.9
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} high disk usage"
+      description: "Disk usage is above 90% for the last 5 minutes."
+
+  # Alert for Spike in Error Rate
+  - alert: HighErrorRate
+    expr: increase(application_errors_total[10m]) > 100
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High error rate detected"
+      description: "More than 100 errors in the last 10 minutes."
+
+  # Alert for p90, p95, p99 latency
+  - alert: HighLatencyP90
+    expr: histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High p90 latency detected"
+      description: "p90 latency is above 500ms for the last 5 minutes."
+
+  - alert: HighLatencyP95
+    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.7
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High p95 latency detected"
+      description: "p95 latency is above 700ms for the last 5 minutes."
+
+  - alert: HighLatencyP99
+    expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High p99 latency detected"
+      description: "p99 latency is above 1s for the last 5 minutes."
+
+  # Alert for High Number of Requests
+  - alert: HighRequestRate
+    expr: rate(http_requests_total[1m]) > 1000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High number of requests"
+      description: "Number of requests exceeds 1000 per minute."
+
+  # Alerts for server restarts (DB, Vault, ArgoCD)
+  - alert: DBServerRestart
+    expr: changes(up{job="db-server"}[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "DB server restart detected"
+      description: "Database server has restarted in the last 5 minutes."
+
+  - alert: VaultServerRestart
+    expr: changes(up{job="vault-server"}[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Vault server restart detected"
+      description: "Hashicorp Vault server has restarted in the last 5 minutes."
+
+  - alert: ArgoCDServerRestart
+    expr: changes(up{job="argocd-server"}[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "ArgoCD server restart detected"
+      description: "ArgoCD server has restarted in the last 5 minutes."
