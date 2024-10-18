@@ -14,7 +14,7 @@ RUN npm install --production
 COPY . .
 
 # Expose the application port (change if necessary)
-EXPOSE 5005
+EXPOSE 5001
 
 # Start the backend API
 CMD ["npm", "start"]
