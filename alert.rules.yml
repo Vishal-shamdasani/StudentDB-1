@@ -1,0 +1,11 @@
+groups:
+  - name: alert.rules
+    rules:
+      - alert: InstanceDown
+        expr: up == 0  # Trigger an alert when any target is down (i.e., not "up")
+        for: 5m        # Wait for 5 minutes before firing the alert
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "Instance {{ $labels.instance }} has been down for more than 5 minutes."

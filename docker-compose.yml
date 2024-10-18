@@ -51,6 +51,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
+      - ./alert.rules.yml:/etc/prometheus/alert.rules.yml 
       - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Mount Prometheus configuration
       - prometheus_data:/prometheus
     ports:
@@ -58,6 +59,16 @@ services:
     networks:
       - monitoring
       - mern-network
+    
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml  # Alertmanager config
+    ports:
+      - "9093:9093"  # Alertmanager default port
+    networks:
+      - monitoring
 
   grafana:
     image: grafana/grafana:latest
@@ -134,4 +145,3 @@ volumes:
   mongo-data:
   prometheus_data:
   grafana_data:
-  loki-data:  # Add Loki data volume

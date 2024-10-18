@@ -1,12 +1,12 @@
 server:
-  http_listen_port: 9080
-  grpc_listen_port: 0
+  http_listen_port: 9080  # Port for Promtail's HTTP server for metrics and health checks
+  grpc_listen_port: 0  # Disables gRPC, only HTTP for this instance
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /tmp/positions.yaml  # Tracks where Promtail last read logs
 
 clients:
-  - url: http://loki:3100/loki/api/v1/push
+  - url: http://loki:3100/loki/api/v1/push  # Push logs to Loki via its API
 
 scrape_configs:
   - job_name: system
@@ -15,7 +15,7 @@ scrape_configs:
           - localhost
         labels:
           job: varlogs
-          __path__: /var/log/*.log
+          __path__: /var/log/*.log  # System logs (adjust if needed)
 
   - job_name: docker
     static_configs:
@@ -23,4 +23,4 @@ scrape_configs:
           - localhost
         labels:
           job: docker
-          __path__: /var/lib/docker/containers/*/*.log
+          __path__: /var/lib/docker/containers/*/*-json.log  # Docker container logs (use JSON format)

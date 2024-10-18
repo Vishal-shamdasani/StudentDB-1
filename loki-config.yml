@@ -1,14 +1,14 @@
 auth_enabled: false
 
 server:
-  http_listen_port: 3100
-  grpc_listen_port: 9095
+  http_listen_port: 3100  # Loki API for Promtail and Grafana
+  grpc_listen_port: 9095  # Enable gRPC for advanced use cases (optional)
 
 ingester:
   lifecycler:
     ring:
       kvstore:
-        store: inmemory
+        store: inmemory  # Use 'inmemory' for small setups; use 'memberlist' for larger setups
       replication_factor: 1
     final_sleep: 0s
   chunk_idle_period: 5m
@@ -32,16 +32,16 @@ storage_config:
     cache_location: /loki/boltdb-cache
     shared_store: filesystem
   filesystem:
-    directory: /loki/chunks
+    directory: /loki/chunks  # Chunks stored here
 
 limits_config:
   enforce_metric_name: false
   reject_old_samples: true
-  reject_old_samples_max_age: 168h
+  reject_old_samples_max_age: 168h  # Reject logs older than 7 days (168h)
 
 chunk_store_config:
   max_look_back_period: 0s
 
 table_manager:
-  retention_deletes_enabled: false
-  retention_period: 0s
+  retention_deletes_enabled: true  # Enable retention
+  retention_period: 168h  # Retain logs for 7 days
