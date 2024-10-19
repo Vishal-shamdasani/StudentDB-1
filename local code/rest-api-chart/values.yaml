@@ -1,0 +1,27 @@
+replicaCount: 2
+
+image:
+  repository: aryanbute/your-image-name
+  tag: latest
+
+service:
+  type: LoadBalancer
+  port: 80
+
+serviceAccount:
+  create: true
+  name: ""
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+
+autoscaling:
+  enabled: false      # Set this to true if you want autoscaling
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80

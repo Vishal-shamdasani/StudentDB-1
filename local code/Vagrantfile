@@ -1,0 +1,15 @@
+Vagrant.configure("2") do |config|
+  # Base box
+  config.vm.box = "ubuntu/bionic64"  # Ubuntu 18.04
+
+  # Forwarding port 8080 to access the API
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # Provisioning script to install Docker and Docker Compose
+  config.vm.provision "shell", path: "provision.sh"
+
+  # Configure VM resources
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+  end
+end
