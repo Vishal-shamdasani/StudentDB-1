@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-api
+spec:
+  ports:
+    - port: 80
+      targetPort: 5001
+  selector:
+    app: {{ .Release.Name }}-api
+  type: LoadBalancer

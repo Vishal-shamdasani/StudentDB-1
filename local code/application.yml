@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: student-api
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: student-api
+data:
+  DATABASE_URL: "postgres://user:password@my-database:5432/mydb"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+  namespace: student-api
+type: Opaque
+data:
+  SECRET_KEY: eW91ci1zZWNyZXQta2V5
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-api
+  namespace: student-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rest-api
+  template:
+    metadata:
+      labels:
+        app: rest-api
+    spec:
+      containers:
+        - name: rest-api
+          image: harjotmakkar/backend:latest
+          ports:
+            - containerPort: 5001
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DATABASE_URL
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SECRET_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-api
+  namespace: student-api
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 5001
+  selector:
+    app: rest-api
+ 

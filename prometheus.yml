@@ -18,7 +18,7 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']   # Monitor Prometheus itself
 
-  - job_name: 'node_exporter'
+  - job_name: 'node-exporter'
     static_configs:
       - targets: ['node-exporter:9100']  # System-level metrics (CPU, memory, disk, etc.)
 
